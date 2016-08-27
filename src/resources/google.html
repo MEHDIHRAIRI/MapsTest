@@ -1,0 +1,110 @@
+<html>
+<head>
+    <!--
+    <script src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+    -->
+
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0px; padding: 0px }
+      #map { height: 100%; background-color: #666970; }
+      #autocomplete {
+        position: absolute;
+        top: 10px;
+        left: 107px;
+        height: 29px;
+        min-width: 50px;
+        background-color: rgb(255, 255, 255);
+        border: 1px solid #eee;
+        border-left: 0px;
+        border-top: 0px;
+        border-radius: 2px;
+        box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+        font-family: Roboto, Arial, sans-serif;
+        font-size: 11px;
+        padding: 8px;
+        z-index: 5;
+      }
+    </style>
+
+    <!--<script type="text/javascript" src="https://maps.google.com/maps/api/js?libraries=places"></script>-->
+
+    <script type="text/javascript">
+        function init() {
+            var latlng = new google.maps.LatLng(52.4064, 16.9252);
+            var myOptions = {
+              backgroundColor: "#666970",
+              zoom: 8,
+              center: latlng,
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+              zoomControl: true,
+              mapTypeControl: true,
+              rotateControl: true,
+              scaleControl: false,
+              streetViewControl: false,
+              fullscreenControl: false
+            };
+
+            document.geocoder = new google.maps.Geocoder();
+            document.map = new google.maps.Map(document.getElementById("map"),myOptions);
+            document.goToLocation = function(searchString) {
+                document.geocoder.geocode( {'address': searchString}, function(results, status) {
+                  if (status == google.maps.GeocoderStatus.OK) {
+                    document.map.setCenter(results[0].geometry.location);
+                  } else {
+                    alert("Geocode was not successful for the following reason: " + status);
+                  }
+                });
+                return "oki";
+            }
+
+            document.map.addListener('click', function(e){
+                java.clickMap(e.latLng.lat(), e.latLng.lng());
+            });
+
+            document.addMarker = function(lat,lng) {
+                var marker = new google.maps.Marker({
+                  position: {lat: lat, lng: lng },
+                  map: document.map,
+                  title: "abc"
+                });
+
+                var infowindow = new google.maps.InfoWindow({
+                  content: "abc <br/>" + new Date().toLocaleString()
+                });
+
+                marker.addListener('click', function() {
+                    console.log("clicked marker " + this.title);
+                    java.println("clicked marker " + this.title);
+                    infowindow.open(document.map, marker);
+                });
+
+                document.map.panTo({lat: lat, lng: lng });
+            }
+
+            autocomplete = new google.maps.places.Autocomplete(
+                /** @type {!HTMLInputElement} */ (document.getElementById('autocomplete'))
+            );
+
+            places = new google.maps.places.PlacesService(document.map);
+            autocomplete.addListener('place_changed', function(){
+                var place = autocomplete.getPlace();
+                if (place.geometry) {
+                    document.map.panTo(place.geometry.location);
+                    document.map.setZoom(15);
+                } else {
+                    document.getElementById('autocomplete').placeholder = 'Enter a city';
+                }
+            });
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=places"></script>
+</head>
+<body onload="init()">
+    <div id="locationField">
+      <input id="autocomplete" placeholder="Enter a city" type="text"/>
+    </div>
+    <div id="map"></div>
+</body>
+</html>

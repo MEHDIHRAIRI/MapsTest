@@ -1,0 +1,26 @@
+<html>
+<head>
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0px; padding: 0px }
+      #map { height: 100%; background-color: #666970; }
+      #map div:nth-child(7) { display: none; }
+    </style>
+
+    <!--
+    <script src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+    -->
+
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+    <script type="text/javascript">
+         var map = null;
+         function getMap()
+         {
+            map = new Microsoft.Maps.Map(document.getElementById('map'), null);
+         }
+      </script>
+</head>
+<body onload="getMap();">
+<div id='map'></div>
+</body>
+</html>
